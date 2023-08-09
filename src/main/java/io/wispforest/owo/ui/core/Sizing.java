@@ -58,6 +58,13 @@ public class Sizing implements Animatable<Sizing> {
     }
 
     /**
+     * Dynamically size the component to fill all the available space
+     */
+    public static Sizing fill() {
+        return fill(100);
+    }
+
+    /**
      * Dynamically size the component based on the available space
      *
      * @param percent How many percent of the available space to take up
