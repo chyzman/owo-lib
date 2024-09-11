@@ -10,6 +10,7 @@ import io.wispforest.owo.ops.TextOps;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -41,7 +42,10 @@ public class DumpdataCommand {
                 .then(literal("block").executes(withRootPath(DumpdataCommand::executeBlock))
                         .then(argument("nbt_path", NbtPathArgumentType.nbtPath()).executes(withPathArg(DumpdataCommand::executeBlock))))
                 .then(literal("entity").executes(withRootPath(DumpdataCommand::executeEntity))
-                        .then(argument("nbt_path", NbtPathArgumentType.nbtPath()).executes(withPathArg(DumpdataCommand::executeEntity)))));
+                        .then(argument("nbt_path", NbtPathArgumentType.nbtPath()).executes(withPathArg(DumpdataCommand::executeEntity))))
+                .then(literal("me").executes(withRootPath(DumpdataCommand::executeMe))
+                        .then(argument("nbt_path", NbtPathArgumentType.nbtPath()).executes(withPathArg(DumpdataCommand::executeEntity))))
+        );
     }
 
     private static Command<ServerCommandSource> withRootPath(DataDumper dumper) {
@@ -100,6 +104,17 @@ public class DumpdataCommand {
 
         final var entity = target.getEntity();
 
+        return dumpEntity(path, source, entity);
+    }
+
+    private static int executeMe(CommandContext<ServerCommandSource> context, NbtPathArgumentType.NbtPath path) throws CommandSyntaxException {
+        final var source = context.getSource();
+        final var entity = source.getEntityOrThrow();
+
+        return dumpEntity(path, source, entity);
+    }
+
+    private static int dumpEntity(NbtPathArgumentType.NbtPath path, ServerCommandSource source, Entity entity) throws CommandSyntaxException {
         informationHeader(source, "Entity");
         sendIdentifier(source, entity.getType(), Registries.ENTITY_TYPE);
 
